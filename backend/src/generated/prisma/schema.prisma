@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  city         String?
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  lastLoginAt  DateTime? @map("last_login_at")
+
+  sessions Session[]
+  searches Search[]
+
+  @@map("users")
+}
+
+model Session {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  loginTime       DateTime  @default(now()) @map("login_time")
+  logoutTime      DateTime? @map("logout_time")
+  durationSeconds Int?      @map("duration_seconds")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  searches Search[]
+
+  @@map("sessions")
+}
+
+model Search {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  sessionId   String   @map("session_id")
+  searchQuery String   @map("search_query")
+  city        String
+  timestamp   DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("searches")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
