@@ -33,3 +33,10 @@ export const fetchCityNews = async (
   });
   return response.data.data;
 };
+
+export const logoutUser = async (sessionId: string): Promise<any> => {
+  const response = await apiClient.post("/api/auth/logout", {
+    sessionId,
+  });
+  return response;
+};

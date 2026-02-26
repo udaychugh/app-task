@@ -1,6 +1,7 @@
 import {
   NewsArticle,
   fetchCityNews,
+  logoutUser,
 } from "@/application/usecases/newsUsecases";
 import { useAuth } from "@/context/AuthContext";
 import { router } from "expo-router";
@@ -81,6 +82,11 @@ export default function DashboardScreen() {
         text: "Logout",
         style: "destructive",
         onPress: async () => {
+          try {
+            await logoutUser(sessionId!);
+          } catch(err) {
+            console.log("Error during logout API call:", err);
+          }
           await clearSession();
           router.replace("/auth");
         },

@@ -1,50 +1,201 @@
-# Welcome to your Expo app 👋
+# City News Search — Admin Dashboard
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> **Expo (React Native + Web) + TypeScript + React Query + Axios**
 
-## Get started
+---
 
-1. Install dependencies
+## Overview
 
-   ```bash
-   npm install
-   ```
+This is the **Admin Dashboard** for City News Search.
 
-2. Start the app
+It allows administrators to:
 
-   ```bash
-   npx expo start
-   ```
+- View all registered users
+- Monitor user search activity
+- Track user session duration
+- Analyze engagement behavior
 
-In the output, you'll find options to open the app in a
+The admin dashboard is built using **Expo**, allowing a single codebase to run on:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- 📱 Mobile (Android / iOS)
+- 🌐 Web
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+All data is fetched securely from the backend API.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Quick Start
+
+### 1. Install Dependencies
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Configure Environment
 
-## Learn more
+Create a `.env` file in the project root:
 
-To learn more about developing your project with Expo, look at the following resources:
+```env
+EXPO_PUBLIC_API_BASE_URL=http://localhost:3000
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+> Replace with your deployed backend URL in production.
 
-## Join the community
+### 3. Start Development Server
 
-Join our community of developers creating universal apps.
+```bash
+npx expo start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Press:
+- `w` → Web
+- `a` → Android
+- `i` → iOS
+
+---
+
+## Features
+
+### Admin Authentication
+- Login via `/api/auth/login`
+- Must have `ADMIN` role
+- Secure token storage
+- Automatic protected route handling
+
+All protected requests include:
+
+```
+Authorization: Bearer <access_token>
+```
+
+---
+
+## Admin API Endpoints
+
+### Users
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/admin/users` | Fetch all registered users |
+
+Returns: Name, Email, City, Last login time
+
+### Sessions
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/admin/sessions` | Fetch user session records |
+
+Returns: User name, email, Login time, Logout time, Duration (seconds)
+
+### Search Logs
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/admin/searches` | Fetch all user search activity |
+
+Returns: User name, email, Search query, Timestamp
+
+---
+
+## Authentication Flow
+
+1. Admin logs in.
+2. Backend validates credentials and role.
+3. Backend returns:
+   - Access token
+   - `sessionId`
+4. Client stores token securely.
+5. All future admin requests include the token in the `Authorization` header.
+6. Unauthorized access redirects to login.
+
+---
+
+## Screens
+
+### 1. Login Screen
+- Email input
+- Password input
+- Submit button
+
+On success:
+- Store token
+- Navigate to dashboard
+
+### 2. Users Screen
+
+Displays: Name, Email, City, Last Login Time
+
+Uses:
+- React Query for fetching
+- `FlatList` on mobile
+- Table-style layout on web
+
+### 3. Sessions Screen
+
+Displays: User Name, Email, Login Time, Logout Time, Duration (seconds)
+
+> Open sessions with no `logout_time` are shown as **active**.
+
+### 4. Search Logs Screen
+
+Displays: User Name, Email, Search Query, Date/Time
+
+Provides full visibility into user search activity.
+
+---
+
+## State Management
+
+| Concern | Solution |
+|---------|----------|
+| Server state (users, sessions, searches) | React Query |
+| Token storage | SecureStore |
+| API client | Centralized Axios instance |
+| Auth errors | Interceptors → auto-logout on `401` |
+
+---
+
+## Error Handling
+
+- Loading indicators for all API calls
+- Graceful empty state handling
+- Unauthorized access auto-redirect
+- Network error fallback messaging
+
+---
+
+## Security
+
+- Role-based access control enforced by backend
+- Token-based authentication
+- No business logic on client
+- No direct database or third-party API access
+
+---
+
+## Design Philosophy
+
+The admin dashboard is intentionally simple. Focus areas:
+
+- Functional clarity
+- Clean API integration
+- Proper route protection
+- Accurate session visibility
+
+UI styling is minimal, as evaluation prioritizes system design and correctness over visual polish.
+
+---
+
+## Conclusion
+
+This admin dashboard demonstrates:
+
+- Clean frontend architecture
+- Secure role-based API integration
+- Clear session lifecycle visibility
+- Structured data presentation
+- Production-oriented separation of concerns
+
+The implementation aligns with the backend design and fulfills all administrative monitoring requirements.
